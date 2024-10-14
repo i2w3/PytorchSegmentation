@@ -25,10 +25,10 @@ if __name__ == "__main__":
                                                    transforms.Resize((256,256), interpolation=0),
                                                    transforms.ToDtype(torch.long),
                                                    ]),}
-    model_state_path = Path("./logs/2024-09-14T111741/best.pth")
+    model_state_path = Path("./logs/2024-09-14T171739/best.pth")
     model_state_dict = torch.load(model_state_path, weights_only=True)["model_state"]
 
-    image_path = Path("./data/kaggle_3m_processed/TCGA_CS_4942_19970222_14.png")
+    image_path = Path("./data/Dataset_BUSI_with_GT/processed/malignant (203).png")
     mask_path = Path("./data/kaggle_3m_processed/TCGA_CS_4942_19970222_14_mask.png")
 
     image_data = transforms_dict["img"](Image.open(image_path)) # (3, 256, 256)
@@ -37,8 +37,8 @@ if __name__ == "__main__":
     mask_data = transforms_dict["mask"](Image.open(mask_path)) # (1, 256, 256)
     mask_data = torch.unsqueeze(mask_data, dim=0).cuda() # (1, 1, 256, 256)
 
-    cm = ConfusionMatrix(2)
-    model = UNet(num_classes=2)
+    cm = ConfusionMatrix(3)
+    model = UNet(num_classes=3)
     model.load_state_dict(model_state_dict, strict=True)
     model = model.cuda().eval()
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         pred = torch.squeeze(pred) # (256, 256)
 
         pred = (pred.cpu().numpy()).astype(np.uint8)
-        mask = PaletteArray(pred, PALETTE, 2)
+        mask = PaletteArray(pred, PALETTE, 3)
         image = Image.fromarray(mask)
         image.save("./demo.png")
         print(cm.calculate_metrics())

@@ -4,14 +4,38 @@ import argparse
 
 import torch
 import torch.nn as nn
-import numpy as np
+import torch.nn.functional as F
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
 from .metrics import ConfusionMatrix
 from .utils import MaskOverflow
-    
+
+def Dice_loss(inputs, target, beta=1, smooth = 1e-5):
+    tp = torch.zeros(3)
+    tn = torch.zeros(3)
+    fp = torch.zeros(3)
+    fn = torch.zeros(3)
+    if inputs.shape != target.shape:
+        # 输出是 logits
+        outputs = torch.argmax(inputs, dim=1).long()
+
+    for cls in range(3):
+        tpt = ((outputs == cls) & (target == cls)).sum().item()
+        tnt = ((outputs != cls) & (target != cls)).sum().item()
+        fpt = ((outputs == cls) & (target != cls)).sum().item()
+        fnt = ((outputs != cls) & (target == cls)).sum().item()
+
+        tp[cls] += tpt
+        tn[cls] += tnt
+        fp[cls] += fpt
+        fn[cls] += fnt
+
+    score = ((1 + beta ** 2) * tp + smooth) / ((1 + beta ** 2) * tp + beta ** 2 * fn + fp + smooth)
+    dice_loss = 1 - torch.mean(score)
+    return dice_loss
+
 class Engine():
     def __init__(self, 
                  model:nn.Module, 
@@ -23,7 +47,9 @@ class Engine():
         self.args = args
         self.logger = logger
         self.LoggingPath = self.logger.log_path.parent
-        self.loss = nn.CrossEntropyLoss(weight = torch.from_numpy(np.ones([args.num_classes], np.float32)).cuda())
+        # self.loss = nn.CrossEntropyLoss(weight = torch.from_numpy(np.ones([args.num_classes], np.float32)).cuda())
+        # self.loss = nn.CrossEntropyLoss(ignore_index=255)
+        self.loss = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(model.parameters(),lr = args.lr, weight_decay = args.weight_decay)
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=10, gamma=0.1)
         self.sroce: dict[str, list] = {key:[] for key in keys_list}
@@ -88,7 +114,11 @@ class Engine():
             self.optimizer.zero_grad()
             x, y = x.to('cuda'), y.to('cuda')
             y_pred = self.model(x)
-            loss = self.loss(y_pred, y)
+            msk = torch.nn.functional.one_hot(y, self.args.num_classes)
+            msk = torch.permute(msk, (0,3,1,2))
+            msk = msk.float()
+            loss = self.loss(y_pred, msk)
+            # loss += Dice_loss(y_pred, msk)
             loss.backward()
             self.optimizer.step()
             with torch.no_grad():
@@ -116,6 +146,7 @@ class Engine():
                 raise MaskOverflow
             y_pred = self.model(x)
             loss = self.loss(y_pred, y)
+            # loss += Dice_loss(y_pred, y)
             running_loss += loss.item()
             self.cm.update(y_pred, y)
 
