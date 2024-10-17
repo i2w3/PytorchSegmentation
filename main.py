@@ -71,19 +71,16 @@ if __name__ == '__main__':
         with torch.inference_mode():
             
             pred = engine.model(image_data)
-            print(pred.shape)
             pred = torch.argmax(pred, dim=1)
-            print(pred.shape)
             pred = torch.squeeze(pred)
-            print(pred.shape)
 
             pred = (pred.cpu().numpy()).astype(np.uint8)
             mask = PaletteArray(pred, PALETTE, args.num_classes)
             image = Image.fromarray(mask)
-            image.save(engine.LoggingPath / f"test_pred_{i}.png")
+            image.save(engine.LoggingPath / f"test_pred_{i+1}.png")
 
             mask_data = (mask_data.cpu().numpy()).astype(np.uint8)
             mask = PaletteArray(mask_data, PALETTE, args.num_classes)
             image = Image.fromarray(mask)
-            image.save(engine.LoggingPath / f"test_mask_{i}.png")
+            image.save(engine.LoggingPath / f"test_mask_{i+1}.png")
     
