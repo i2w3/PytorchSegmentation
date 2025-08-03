@@ -1,12 +1,5 @@
-data/Dataset_BUSI_with_GT/*
-!data/Dataset_BUSI_with_GT/*.url
-
-data/kaggle_3m/*
-!data/kaggle_3m/*.url
-
-data/kaggle_3m_processed/*
-
 logs
-models/__pycache__
-utils/__pycache__
-runVSCode.bat
+__pycache__
+
+data/Dataset_BUSI_with_GT/*
+!data/Dataset_BUSI_with_GT/.gitkeep

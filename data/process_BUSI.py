@@ -20,6 +20,7 @@ classes = {"normal":0, "benign":1, "malignant": 2}
 palette = [  0, 0, 0,
            255, 0, 0,
            0, 255, 0]
+
 for key, value in classes.items():
     files = list((datasetPath / key).rglob("*" + maskSuffix))
     for file in files:
@@ -31,8 +32,9 @@ for key, value in classes.items():
             for extra_file in extra_files:
                 mask += np.array(Image.open(extra_file).convert("L"))
             print(np.unique(mask))
-        mask[mask==255] = value
-        mask[mask==254] = value
+        # mask[mask==255] = value
+        # mask[mask==254] = value
+        mask[mask > 0] = value
         mask = Image.fromarray(mask).convert("P")
         mask.putpalette(palette)
         mask.save(processedPath / file.name)

@@ -20,25 +20,31 @@ def get_args_parser():
     parser = argparse.ArgumentParser('todo', add_help=False)
     parser.add_argument('--num_classes', default=3, type=int)
     parser.add_argument('--lr', default=1e-3, type=float)
-    parser.add_argument('--batch_size', default=16, type=int)
+    parser.add_argument('--batch_size', default=8, type=int)
     parser.add_argument('--weight_decay', default=1e-4, type=float)
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--test_number', default=10, type=int)
+    parser.add_argument('--seed', default=1234, type=int)
     return parser
+
+def set_seed(args):
+    torch.manual_seed(args.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(args.seed)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
 
     transforms_dict = {"img": transforms.Compose([transforms.ToImage(),
-                                                  transforms.ToDtype(torch.uint8, scale=True), 
                                                   transforms.Resize((512,512)),
                                                   transforms.ToDtype(torch.float32, scale=True),
                                                   transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
                                                   ]),
                        "mask": transforms.Compose([transforms.ToImage(),
-                                                   transforms.ToDtype(torch.uint8), 
-                                                   transforms.Resize((512,512), interpolation=0),
+                                                   transforms.Resize((512,512), interpolation=transforms.InterpolationMode.NEAREST),
                                                    transforms.ToDtype(torch.long),
                                                    ]),}
     
