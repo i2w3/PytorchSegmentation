@@ -1,7 +1,6 @@
 '''
 测试 segmentation_models_pytorch 中各种模型能否被 torch.compile 成功编译运行
 '''
-
 import os
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 os.environ['OMP_NUM_THREADS'] = '1'

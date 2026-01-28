@@ -17,10 +17,10 @@ from torchvision.io import read_image
 import matplotlib.pyplot as plt
 import numpy as np
 
+from utils import change_name
 
 # MODEL = "dinov3/vitt16-eomt-coco"
 MODEL = "dinov3/vits16-eomt-coco"
-
 
 CONFIG = {
     "classes_name": ["Background", "Building", "Road", "Water", "Barren", "Forest", "Agricultural", "Playground", "Pond"],
@@ -88,15 +88,6 @@ def over_leap(config:dict, img_data:np.ndarray, mask_data:np.ndarray) -> List[np
     # 将 mask_data 不为 0 的区域，使用 255 替换
     mask_data_bin = np.where(mask_data <= 1, 0, 255).astype(np.uint8)
     return [mask_data_bin,color_mask]
-
-
-def change_name(path:Path, old_name:str, new_name:str) -> Path:
-    # 将 TARGET_PATH 中的 OLD_NAME 替换为 NEW_NAME
-    paris = path.parts
-    if old_name in paris:
-        new_parts = [new_name if part == old_name else part for part in paris]
-        return Path(*new_parts)
-    return path
 
 
 if __name__ == "__main__":
@@ -174,7 +165,7 @@ if __name__ == "__main__":
             mask_path = change_name(image_paths[args.ids], "images_png", "masks_png")
             mask_data = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
             pred_data = model.predict(image_data)
-            plot_data(CONFIG, image_data.permute(1,2,0).numpy(), mask_data, pred_data.cpu().numpy(), save_str=f"example_plot_{args.ids}.png")
+            plot_data(CONFIG, image_data.permute(1,2,0).numpy(), mask_data, pred_data.cpu().numpy(), save_str=f"./assets/example_plot_{args.ids}.png")
         elif args.task == 4:
             print("Exporting the model to ONNX format...")
             model.export_onnx(
