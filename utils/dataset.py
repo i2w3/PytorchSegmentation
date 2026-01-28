@@ -5,18 +5,10 @@ from pathlib import Path
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import cv2
-import kagglehub
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
-
-def change_name(path:Path, old_name:str, new_name:str) -> Path:
-    # 将 TARGET_PATH 中的 OLD_NAME 替换为 NEW_NAME
-    paris = path.parts
-    if old_name in paris:
-        new_parts = [new_name if part == old_name else part for part in paris]
-        return Path(*new_parts)
-    return path
+from .utils import change_name
 
 def get_train_transforms():
     return A.Compose([A.RandomResizedCrop(size=[512, 512], scale=(0.6, 1.0), ratio=(0.9, 1.1),
@@ -58,9 +50,8 @@ class EarthVQA(Dataset):
                             Forest=5,
                             Agricultural=6,
                             Playground=7,
-                            Pond=8,
                 )
-    def __init__(self, data_path:Union[str, Path] = "./datasets/EarthVQA", split:str = "train",augmentation=None, num_classes:int=9):
+    def __init__(self, data_path:Union[str, Path] = "./datasets/EarthVQA", split:str = "train",augmentation=None, num_classes:int=8):
         super().__init__()
         if isinstance(data_path, str):
             data_path = Path(data_path)

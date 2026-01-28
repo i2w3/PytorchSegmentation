@@ -18,7 +18,7 @@ import segmentation_models_pytorch as smp
 from utils import *
 
 '''
-python train_smp.py --arch upernet --encoder_name resnext50_32x4d --encoder_weights ssl --num_classes 9 --enable_compile
+python train_smp.py --arch upernet --encoder_name resnext50_32x4d --encoder_weights ssl --num_classes 8 --enable_compile
 '''
 
 def parse_args():
@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument("--arch", type=str, help="模型架构")
     parser.add_argument("--encoder_name", type=str, default=None, help="编码器名称")
     parser.add_argument("--encoder_weights", type=str, default="imagenet", help="编码器预训练权重")
-    parser.add_argument("--num_classes", default=9, type=int, help="类别数量")
+    parser.add_argument("--num_classes", default=8, type=int, help="类别数量")
     parser.add_argument("--seed", type=int, default=42, help="随机种子，默认为 42")
     parser.add_argument("--export_ckpt", type=str, default=None, help="用于导出 ONNX 格式的检查点路径")
     parser.add_argument("--lr", type=float, default=5e-5, help="学习率，默认为 5e-5")
