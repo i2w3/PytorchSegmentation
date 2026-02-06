@@ -40,6 +40,7 @@
 ```
 
 ## prediction example
-![](./assets/example_plot_0.png)
-![](./assets/example_plot_1.png)
-![](./assets/rit18_sample.png)
+| EarthVQA | RIT-18 |
+|---|---|
+| ![](./assets/example_plot_0.png) | ![](./assets/rit18_sample_0.png) |
+| ![](./assets/example_plot_1.png) | ![](./assets/rit18_sample_10.png) |
