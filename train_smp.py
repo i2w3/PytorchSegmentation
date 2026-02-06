@@ -170,7 +170,7 @@ if __name__ == "__main__":
         logger = [CSVLogger("logs", name=logger_path)]
 
         trainer = L.Trainer(accelerator="gpu", 
-                            devices=[3,6], 
+                            devices=[0,1], 
                             # strategy='ddp_find_unused_parameters_false',
                             precision="16-mixed",  
                             max_epochs=200, 

@@ -1,6 +1,6 @@
 from .dataset import EarthVQA
 from .dataset import make_loader, get_train_transforms, get_other_transforms
-from .utils import change_name
+from .utils import change_name, view_rit18, plt
 
 from .model import *
 

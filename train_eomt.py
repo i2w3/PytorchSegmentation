@@ -19,8 +19,7 @@ import numpy as np
 
 from utils import change_name
 
-# MODEL = "dinov3/vitt16-eomt-coco"
-MODEL = "dinov3/vits16-eomt-coco"
+MODEL = "dinov3/vits32-eomt-coco"
 
 CONFIG = {
     "classes_name": ["Background", "Building", "Road", "Water", "Barren", "Forest", "Agricultural", "Playground", "Pond"],
@@ -97,13 +96,13 @@ if __name__ == "__main__":
         # 1. Pretrain the test split
         test_path = data_path / "Test" / "images_png"
         lightly_train.pretrain(
-            out=f"logs/{Path(MODEL).stem}_pretrain",
+            out=f"logs/{Path(MODEL).stem}_{data_path.stem}_pretrain",
             data=test_path,
             model=MODEL.split("-")[0],
             method="dinov2",
             batch_size=256,
             num_workers=16,
-            devices=[1,2],
+            devices=[4,5,6,7],
             resume_interrupted=True, # 不知道为何容易一张显卡上的进程丢失，建议加上这个
         )
     elif args.task == 2:

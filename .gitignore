@@ -1,4 +1,6 @@
 __pycache__
 
+datasets/EarthVL
 datasets/EarthVQA
+datasets/rit18
 logs
