@@ -86,14 +86,14 @@ if __name__ == "__main__":
     trainer.fit(model=task, datamodule=datamodule)
 
     # 测试可视化一下结果
-    # task.load_state_dict(torch.load("./logs/torcgeo_rit18/epoch=4-step=35-v1.ckpt")['state_dict'])
-    # val_dataset = RIT18(split="val")
-    # IDS = 10
-    # sample = val_dataset[IDS]
+    task.load_state_dict(torch.load("./logs/torcgeo_rit18/epoch=4-step=35-v1.ckpt")['state_dict'])
+    val_dataset = RIT18(split="val")
+    IDS = 0
+    sample = val_dataset[IDS]
 
-    # image, mask = sample['image'], sample['mask']
-    # pred = task.model(image.unsqueeze(0))
-    # pred_mask = torch.argmax(pred, dim=1)
+    image, mask = sample['image'], sample['mask']
+    pred = task.model(image.unsqueeze(0))
+    pred_mask = torch.argmax(pred, dim=1)
 
-    # fig = view_rit18(sample, pred_mask.squeeze(0))
-    # plt.savefig(f"./assets/rit18_sample_{IDS}.png")
+    fig = view_rit18(sample, pred_mask.squeeze(0))
+    plt.savefig(f"./assets/rit18_sample_{IDS}.png")
